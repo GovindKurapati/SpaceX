@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Launches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Montserrat+Subrayada:wght@700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="/images/favicon.ico">  
+    
+
+</head>
+<body>
+
+    <div class="topnav" id="myTopnav">
+        <a href="index.html" id="brand">SpaceX</a>
+        <a href="PastLaunch.html">Past Launches</a>
+        <a href="UpcomingLaunch.html">Upcoming Launches</a>
+        <a href="FindLaunch.html" class="active">Find Launch</a>
+        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+            <i class="fa fa-bars"></i>
+        </a>
+    </div>    
+
+    <div class="nextLaunch">
+        <h2>Enter Flight ID:</h2>
+        <input id="flightId" type="number"  min="1" max="114" placeholder="eg.(1-114)">
+        <button onclick="searchId()" style="height:40px;">Search</button>
+        <h1></h1>
+        <h3></h3>
+        <p id="nextLaunchDetails"></p>
+        <div>
+            <p id="launchtime"></p>
+        </div>
+    </div> 
+
+    
+
+    <script>
+        function myFunction() {
+          var x = document.getElementById("myTopnav");
+          if (x.className === "topnav") {
+            x.className += " responsive";
+          } else {
+            x.className = "topnav";
+          }
+        }
+        function searchId(){
+            var t=document.getElementById("flightId").value;
+            
+            let xhr = new XMLHttpRequest;       
+            //Call the open function, GET-type of request
+            xhr.open('GET', 'https://api.spacexdata.com/v3/launches/'+Number(t) , true)
+            //call the onload 
+        
+            xhr.onload = function() 
+            {
+                //check if the status is 200(means everything is okay)
+                if (this.status === 200) 
+                {
+                    //return server response as an object with JSON.parse
+                    var obj = JSON.parse(this.responseText);  
+                    console.log(obj);
+                    document.getElementById("nextLaunchDetails").innerHTML=obj.details;
+                    document.querySelector("h1").innerHTML=obj.rocket.rocket_name;
+                    document.querySelector("h3").innerHTML=obj.mission_name;
+                    if(obj.links.mission_patch_small)
+                    {
+                        document.getElementById("nextLaunchDetails").innerHTML=`<img src="${obj.links.mission_patch_small}"</img>`;
+                    }
+                    document.getElementById("launchtime").innerHTML=`Launch Details:  `+(obj.launch_date_local).substring(0,10)+"  "+(obj.launch_date_local).substring(11);
+                        
+        
+                }
+                else{
+                    alert("API not fetched properly or flight number is not valid");
+                }
+            }           
+        xhr.send();
+        }
+    </script>
+
+    
+</body>
+</html>

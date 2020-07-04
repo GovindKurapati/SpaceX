@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Launches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Montserrat+Subrayada:wght@700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="/images/favicon.ico">  
+
+</head>
+<body>
+
+    <div class="topnav" id="myTopnav">
+        <a href="index.html" id="brand">SpaceX</a>
+        <a href="PastLaunch.html">Past Launches</a>
+        <a href="UpcomingLaunch.html" class="active">Upcoming Launches</a>
+        <a href="FindLaunch.html">Find Launch</a>
+        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+            <i class="fa fa-bars"></i>
+        </a>
+    </div>
+
+    <table id="myTable"> 
+        <tr>
+            <th>Flight Number</th>
+            <th>Mission Name</th>
+            <th>Launch Date</th>
+        </tr>
+
+    </table>
+
+    <script>
+        function myFunction() {
+          var x = document.getElementById("myTopnav");
+          if (x.className === "topnav") {
+            x.className += " responsive";
+          } else {
+            x.className = "topnav";
+          }
+        }
+
+        let xhr = new XMLHttpRequest;       
+        //Call the open function, GET-type of request
+        xhr.open('GET', 'https://api.spacexdata.com/v3/launches/upcoming', true)
+        //call the onload 
+        xhr.onload = function() 
+        {
+            //check if the status is 200(means everything is okay)
+            if (this.status === 200) 
+            {
+                //return server response as an object with JSON.parse
+                var obj=JSON.parse(this.responseText);
+                var mytable = document.getElementById("myTable");
+                for(var i=0;i<obj.length;i++)
+                {
+                    var utc_timestamp = obj[i].launch_date_utc;
+                    var date = new Date(utc_timestamp);
+                    var rocketName = obj[i].rocket.rocket_name;
+                    var rocketType = obj[i].rocket.rocket_type;
+                
+
+                    var localDate = date.getDate()+"-"+String(Number(date.getMonth())+1)+"-"+date.getFullYear()+"  "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();                   
+                    
+                    
+                    var row = `<tr>
+                                    <td><a style="color:black" class="anchor"</a>${obj[i].flight_number}<p class="content">${rocketName}${rocketType}</p></td>
+                                    <td>${obj[i].mission_name}</td>
+                                    <td>${localDate}</td>
+                                </tr>`
+                                                     
+                                     
+                    mytable.innerHTML+=row;                        
+                }
+                 var anchors = document.querySelectorAll(".anchor");
+                 for(var i=0;i<obj.length;i++)
+                 {
+                    anchors[i].addEventListener("click",function(){
+                    console.log(obj);
+                    var content = this.lastElementChild;
+                    if (content.style.maxHeight){
+                        content.style.maxHeight = null;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    } 
+                    })
+                }
+            }
+            else{
+                alert("Error in fetching API data");
+            }
+        }
+        //call send
+        xhr.send();
+    </script>
+
+    
+</body>
+</html>
