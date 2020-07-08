@@ -3,7 +3,7 @@ body {
     font-family: 'Roboto Condensed', sans-serif;
     background-color:black;
     color: white;
-    background: url("/images/bgimage.jpg");
+    background: url("images/bgimage.jpg");
   }
 .topnav {
     background-color: #333;
